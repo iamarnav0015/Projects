@@ -1,0 +1,55 @@
+*{
+    padding: 0;
+    margin: 0;
+   
+}
+
+nav{
+    
+    background-color: rgb(1, 0, 23);
+    display: flex;
+    position: relative;
+}
+img{
+    width: auto;
+    height: 55px;
+}
+
+ul li{
+    color: white;
+    display: flex;
+    padding-left: 4px;
+    padding-top: 15px;
+
+}
+ul a{
+    color: white;
+    text-decoration: none;
+    padding-left: 30px;
+    padding-top: 1px;
+    font-size: larger;
+
+}
+
+.Search input{
+    margin-left: 900px;
+    padding-left: 30px;
+    color: antiquewhite ;
+
+}
+
+.Search img{
+    border-radius: 50%;
+    margin-top: 10px;
+    left: 100px;
+    bottom: 10px;
+
+    
+}
+.Search i{
+    color: white;
+    position: absolute;
+    display: flex;
+    right: 1000px;
+}
+

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List</title>
+  <style>
+    body {
+      padding: 20px;
+    }
+    
+    .container {
+      border: 2px solid black;
+      padding: 20px;
+      width: 400px;
+      margin: 0 auto;
+    }
+    
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      padding: 10px;
+      
+    }
+    
+    li.checked {
+      text-decoration: line-through;
+    }
+    
+    .task {
+      flex-grow: 1;
+    }
+    
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-right: 2px;
+    }
+    
+    img {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .delete-button {
+      margin-left: auto;
+    }
+    
+    .down-button {
+      visibility: hidden;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    li:not(:last-child) .down-button {
+      visibility: visible;
+    }
+    
+    .delete-animation {
+      animation-name: deleteFadeOut;
+      animation-duration: 0.3s;
+      animation-fill-mode: forwards;
+    }
+    
+    @keyframes deleteFadeOut {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  </style>
+
+
+</head>
+<body>
+  <div class="container">
+    <h1 style="text-align: center;">Todo List</h1>
+    
+    <input type="text" id="taskInput" placeholder="Enter a task" onkeydown="handleKeyPress(event)" style="width: 340px;">
+    <button onclick="addTask()">Add</button>
+    
+    <ul id="taskList"></ul>
+  </div>
+
+  
+  
+  <script>
+    // JavaScript code for the to-do list functionality
+    
+    // function for adding tasks
+    function addTask() {
+      var taskInput = document.getElementById('taskInput');
+      var taskText = taskInput.value;
+      
+      if (taskText.trim() !== '') {
+        var taskList = document.getElementById('taskList');
+        var li = document.createElement('li');
+        
+        var randomColor = getRandomColor();
+        li.style.backgroundColor = randomColor;
+        
+        li.innerHTML = `
+          <input type="checkbox" onclick="updateTaskStatus(this)">
+          <div class="task">${taskText}</div>
+          <div class="buttons">
+            <img src="up.png" onclick="moveUp(this.parentNode.parentNode)">
+            <img src="delete.png" onclick="deleteTask(this.parentNode.parentNode)" class="delete-button">
+            <img src="down.png" onclick="moveDown(this.parentNode.parentNode)" class="down-button">
+          </div>
+        `;
+        taskList.appendChild(li);
+        
+        taskInput.value = '';
+        
+        playSound('addSound');
+        updateButtons();
+      }
+    }
+
+    // when enter key is pressed, add the task
+    function handleKeyPress(event) {
+      if (event.keyCode === 13) {
+        addTask();
+      }
+    }
+    
+    // function for when we click on moveup image
+    function moveUp(item) {
+      var prevItem = item.previousElementSibling;
+      if (prevItem) {
+        item.parentNode.insertBefore(item, prevItem);
+        updateButtons();
+      }
+    }
+    
+    // function for when we click on movedown image
+    function moveDown(item) {
+      var nextItem = item.nextElementSibling;
+      if (nextItem) {
+        item.parentNode.insertBefore(nextItem, item);
+        updateButtons();
+      }
+    }
+    
+    // function for deleting an item with animation
+    function deleteTask(item) {
+      var taskText = item.querySelector('.task');
+      var originalText = taskText.innerText;
+      taskText.innerText = 'Item Deleted'; // update the list text to "Item Deleted"
+      
+    
+        setTimeout(function() {
+          item.parentNode.removeChild(item);
+          updateButtons();
+        }, 0);
+    }
+    
+    // function for updating the task status on checkbox click
+    function updateTaskStatus(checkbox) {
+      var item = checkbox.parentNode;
+      item.classList.toggle('checked');
+      var taskList = document.getElementById('taskList');
+      taskList.appendChild(item);
+      updateButtons();
+    }
+    
+    // function for updating button positions
+    function updateButtons() {
+      var taskList = document.getElementById('taskList');
+      var items = taskList.getElementsByTagName('li');
+      var itemCount = items.length;
+
+      for (var i = 0; i < itemCount; i++) {
+        var item = items[i];
+        var buttons = item.getElementsByClassName('buttons')[0];
+
+        var upImage = buttons.querySelector('img:first-child');
+        var downImage = buttons.querySelector('img.down-button');
+        var deleteImage = buttons.querySelector('img.delete-button');
+
+        if (i === 0) {
+          upImage.style.display = 'none';
+        } else {
+          upImage.style.display = 'inline-block';
+        }
+
+        if (i === itemCount - 1) {
+          if (itemCount >= 2) {
+            downImage.style.display = 'inline-block';
+            deleteImage.style.marginLeft = '';
+            item.style.marginBottom = '10px';
+          } else {
+            downImage.style.display = 'none';
+            deleteImage.style.marginLeft = 'auto';
+            item.style.marginBottom = '';
+          }
+        } else {
+          downImage.style.display = 'inline-block';
+          deleteImage.style.marginLeft = '';
+          item.style.marginBottom = '';
+        }
+
+        if (itemCount === 1) {
+          deleteImage.style.display = 'inline-block';
+        } else {
+          deleteImage.style.display = 'inline-block';
+        }
+      }
+    }
+
+    // function for playing sound
+    function playSound(soundId) {
+      var sound = document.getElementById(soundId);
+      sound.currentTime = 0;
+      sound.play();
+    }
+
+    // function for generating random colors
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = 'white';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  </script>
+</body>
+</html>
